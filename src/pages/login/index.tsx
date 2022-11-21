@@ -9,6 +9,7 @@ const { Item } = Form;
 const FormLogin: React.FC = () => {
   const onFinish = (values: any) => {
     // alert("表单提交了");
+    console.log("向服务器发送登录请求");
     console.log("Success:", values);
   };
 
@@ -30,9 +31,8 @@ const FormLogin: React.FC = () => {
       return Promise.reject("密码必须大于等于4位");
     } else if (!/^\w+$/.test(value)) {
       return Promise.reject("密码必须是字母、数字、下划线组成");
-    } else {
-      return Promise.resolve();
     }
+    return Promise.resolve();
   };
 
   return (
