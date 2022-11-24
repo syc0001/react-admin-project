@@ -2,15 +2,28 @@ import React from "react";
 import { Button, Form, Input } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { RuleObject } from "antd/lib/form";
+import { connect } from "react-redux";
 import "./css/index.less";
 import logo from "./imgs/logo.png";
+import { reducersType } from "../../redux/reducers";
+import {
+  createDemo1Action,
+  createDemo2Action,
+} from "../../redux/actions_creators/test_action";
 const { Item } = Form;
 
-const FormLogin: React.FC = () => {
+interface LoginProps {
+  test: reducersType["test"];
+  demo1: typeof createDemo1Action;
+  demo2: typeof createDemo2Action;
+}
+
+const FormLogin: React.FC<LoginProps> = (props: LoginProps) => {
   const onFinish = (values: any) => {
     // alert("表单提交了");
     console.log("向服务器发送登录请求");
     console.log("Success:", values);
+    props.demo2("0719");
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -58,8 +71,17 @@ const FormLogin: React.FC = () => {
       >
         <Input prefix={<UserOutlined />} />
       </Item>
-
-      <Item label="密码" name="password" rules={[{ validator: pwdValidator }]}>
+      <Item
+        label="密码"
+        name="password"
+        // rules={[
+        //   { required: true, message: "密码必须输入" },
+        //   { min: 4, message: "密码必须大于等于4位" },
+        //   { max: 12, message: "密码必须小于等于12位" },
+        //   { pattern: /^\w+$/, message: "密码必须是字母、数字、下划线组成" },
+        // ]}
+        rules={[{ validator: pwdValidator }]}
+      >
         <Input.Password prefix={<LockOutlined />} />
       </Item>
 
@@ -72,19 +94,34 @@ const FormLogin: React.FC = () => {
   );
 };
 
-export default function Login() {
+function Login(props: LoginProps) {
+  // console.log(typeof props.test);
   return (
     <div className="login">
       <header>
         <img src={logo} alt="" />
-        <h1>商品管理系统</h1>
+        <h1>商品管理系统{(props as any).test}</h1>
       </header>
       <section>
         <div className="wrapper">
           <h1>用户登录</h1>
-          <FormLogin />
+          <FormLogin
+            test={props.test}
+            demo1={props.demo1}
+            demo2={props.demo2}
+          />
         </div>
       </section>
     </div>
   );
 }
+
+export default connect(
+  (state: reducersType) => ({
+    test: state.test,
+  }),
+  {
+    demo1: createDemo1Action,
+    demo2: createDemo2Action,
+  }
+)(Login);
