@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { RuleObject } from "antd/lib/form";
 import { connect } from "react-redux";
@@ -10,6 +10,8 @@ import {
   createDemo1Action,
   createDemo2Action,
 } from "../../redux/actions_creators/test_action";
+import { reqLogin } from "../../api";
+
 const { Item } = Form;
 
 interface LoginProps {
@@ -18,16 +20,24 @@ interface LoginProps {
   demo2: typeof createDemo2Action;
 }
 
-const FormLogin: React.FC<LoginProps> = (props: LoginProps) => {
-  const onFinish = (values: any) => {
+const FormLogin: React.FC = () => {
+  const onFinish = async (values: { username: string; password: string }) => {
     // alert("表单提交了");
-    console.log("向服务器发送登录请求");
-    console.log("Success:", values);
-    props.demo2("0719");
+    // console.log("向服务器发送登录请求");
+    // console.log("Success:", values);
+
+    let result: any = await reqLogin(values.username, values.password);
+    const { status, data, msg } = result;
+    if (status === 0) {
+      console.log(data);
+    } else {
+      message.warning(msg, 1);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
+    message.error("表单输入错误,请检查");
+    // console.log("Failed:", errorInfo);
   };
 
   const pwdValidator = (
@@ -100,16 +110,12 @@ function Login(props: LoginProps) {
     <div className="login">
       <header>
         <img src={logo} alt="" />
-        <h1>商品管理系统{(props as any).test}</h1>
+        <h1>商品管理系统</h1>
       </header>
       <section>
         <div className="wrapper">
           <h1>用户登录</h1>
-          <FormLogin
-            test={props.test}
-            demo1={props.demo1}
-            demo2={props.demo2}
-          />
+          <FormLogin />
         </div>
       </section>
     </div>
