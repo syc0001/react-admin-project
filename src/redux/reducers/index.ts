@@ -1,9 +1,11 @@
-import { combineReducers } from "redux";
-import test_reducer from "./test_reducer";
+import { combineReducers, ReducersMapObject } from "redux";
+import loginReducer from "./login_reducer";
 
-const reducers = { test: test_reducer };
+const reducers = { userInfo: loginReducer };
 
-export type reducersType = typeof reducers;
+export type reducersType = {
+  [key in keyof typeof reducers]: ReturnType<typeof reducers[key]>;
+};
 
 const reducer = combineReducers<reducersType>(reducers);
 

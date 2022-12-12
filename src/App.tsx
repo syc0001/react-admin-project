@@ -7,14 +7,6 @@ function App() {
   const RouteElement = useRoutes(routes);
   return (
     <Fragment>
-      {/* Hello World
-      <button>Login</button> */}
-
-      {/* <Routes>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/admin" element={<Admin />}></Route>
-      </Routes> */}
-
       {RouteElement}
     </Fragment>
   );

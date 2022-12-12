@@ -1,22 +1,31 @@
-import { connect } from "react-redux";
-import React from "react";
-import { reducersType } from "../../redux/reducers";
-import {
-  createDemo1Action,
-  createDemo2Action,
-} from "../../redux/actions_creators/test_action";
+import {connect} from "react-redux";
+import {reducersType} from "../../redux/reducers";
+import {Navigate} from "react-router-dom";
+import {FC} from "react";
+import {createDeleteUserInfoAction} from "../../redux/actions_creators/login_action";
 
-function Admin(props: reducersType) {
-  console.log(props);
-  return <div>Admin</div>;
-}
+const mapStateToProps = (state: reducersType) => ({
+    userInfo: state.userInfo
+});
+const mapDispatchToProps = {deleteUserInfo:createDeleteUserInfoAction};
+type LoginProps = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
+const Admin: FC<LoginProps> = (props: LoginProps) => {
+    const {user, isLogin} = props.userInfo;
+
+    if (!isLogin) {
+        return <Navigate to={"/"}/>;
+    } else {
+        return (
+            <div>
+                我是Addmin组件,登录了,名字是
+                {user.username}
+                <button onClick={props.deleteUserInfo}>退出登录</button>
+            </div>
+        );
+    }
+};
 
 export default connect(
-  (state: reducersType) => ({
-    test: state.test,
-  }),
-  {
-    demo1: createDemo1Action,
-    demo2: createDemo2Action,
-  }
+    mapStateToProps, mapDispatchToProps
 )(Admin);
