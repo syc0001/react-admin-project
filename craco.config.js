@@ -1,18 +1,6 @@
 const CracoAntDesignPlugin = require("craco-antd");
 
 module.exports = {
-  // babel: {
-  //   plugins: [
-  //     [
-  //       "import",
-  //       {
-  //         libraryName: "antd",
-  //         libraryDirectory: "es",
-  //         style: "true",
-  //       },
-  //     ],
-  //   ],
-  // },
   plugins: [
     {
       plugin: CracoAntDesignPlugin,

@@ -1,15 +1,15 @@
-import React, { Fragment } from "react";
+import { Fragment, FC } from "react";
 import { useRoutes } from "react-router-dom";
 import "./App.less";
-import routes from "./routes/index";
+import routers from "./routes/index";
 
-function App() {
-  const RouteElement = useRoutes(routes);
+const App: FC<any> = () => {
+  const RouteElement = useRoutes(routers);
   return (
     <Fragment>
       {RouteElement}
     </Fragment>
   );
-}
+};
 
 export default App;
