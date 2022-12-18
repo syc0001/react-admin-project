@@ -5,7 +5,7 @@ import { RuleObject } from "antd/lib/form";
 import { connect } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import "./css/Login.less";
-import logo from "./imgs/logo.png";
+import logo from "../../static/images/logo.png";
 import { reducersType } from "../../redux/reducers";
 import { createSaveUserInfoAction } from "../../redux/actions_creators/login_action";
 import { reqLogin } from "../../api";
@@ -82,7 +82,7 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
 
       <Item wrapperCol={{ offset: 0, span: 24 }}>
         <Button type="primary" htmlType="submit" className="Item_Login_Button">
-          Submit
+          登录
         </Button>
       </Item>
     </Form>
@@ -91,7 +91,7 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
 
 const Login: FC<LoginProps> = (props: LoginProps) => {
   if (props.isLogin) {
-    return <Navigate to={"/admin"} />;
+    return <Navigate to={"/admin/home"} />;
   }
   return (
     <div className="login">

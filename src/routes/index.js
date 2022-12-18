@@ -20,20 +20,21 @@ const routers = [
     element: <Admin />,
     children: [
       {
-        path: "",
-        element: <Navigate to="/admin/home" />,
-      },
-      {
         path: "home",
         element: <Home />,
       },
       {
-        path: "category",
-        element: <Category />,
-      },
-      {
-        path: "product",
-        element: <Product />,
+        path: "prud_about",
+        children: [
+          {
+            path: "category",
+            element: <Category />,
+          },
+          {
+            path: "product",
+            element: <Product />,
+          },
+        ],
       },
       {
         path: "user",
@@ -44,16 +45,21 @@ const routers = [
         element: <Role />,
       },
       {
-        path: "bar",
-        element: <Bar />,
-      },
-      {
-        path: "line",
-        element: <Line />,
-      },
-      {
-        path: "pie",
-        element: <Pie />,
+        path: "echats",
+        children: [
+          {
+            path: "bar",
+            element: <Bar />,
+          },
+          {
+            path: "line",
+            element: <Line />,
+          },
+          {
+            path: "pie",
+            element: <Pie />,
+          },
+        ],
       },
     ],
   },

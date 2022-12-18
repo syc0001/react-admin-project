@@ -7,6 +7,7 @@ import { reqCategoryList } from "../../api";
 import { Layout } from "antd";
 import "./css/Admin.less";
 import Header from "./Header/Header";
+import LeftNav from "./LeftNav/LeftNav";
 
 const { Footer, Sider, Content } = Layout;
 
@@ -34,7 +35,9 @@ const Admin: FC<AdminProps> = (props: AdminProps) => {
   }
   return (
     <Layout className="admin-container">
-      <Sider className="sider">硅谷后台</Sider>
+      <Sider className="sider">
+        <LeftNav />
+      </Sider>
       <Layout>
         <Header />
         <Content className="content">

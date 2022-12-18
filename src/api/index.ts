@@ -1,11 +1,32 @@
 import myAxios from "./myAxios";
-import { BASE_URL } from "../config";
+import { BASE_URL, A_MAP_KEY, A_MAP_URL, CITY_CODE } from "../config";
+import jsonp from "jsonp";
+import { message } from "antd";
 
+//登录请求
 export const reqLogin = (username: string, password: string) => {
-  //   console.log(username, password);
   return myAxios.post(`${BASE_URL}/login`, { username, password });
 };
 
+//获取商品列表请求
 export const reqCategoryList = () => {
   return myAxios.get(`${BASE_URL}/manage/category/list`);
+};
+
+//获取天气信息
+export const reqWeather = () => {
+  return new Promise((resolve, reject) => {
+    jsonp(
+      `https://restapi.amap.com/v3/weather/weatherInfo?key=${A_MAP_KEY}&city=${CITY_CODE}&output=JSON&extensions=base`,
+      {},
+      (err, data) => {
+        if (err) {
+          message.error("请求天气接口失败,请联系管理员");
+          return new Promise(() => {});
+        }
+        const { weather, temperature } = data.lives[0];
+        resolve({ weather, temperature });
+      }
+    );
+  });
 };

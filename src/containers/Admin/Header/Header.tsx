@@ -1,5 +1,4 @@
 import { FC, useEffect, useState } from "react";
-import "./css/Header.less";
 import {
   FullscreenOutlined,
   FullscreenExitOutlined,
@@ -7,13 +6,23 @@ import {
 } from "@ant-design/icons";
 import { Button } from "antd";
 import screenFull from "screenfull";
+import dayjs from "dayjs";
 import { Modal } from "antd";
 import { connect } from "react-redux";
 import { reducersType } from "../../../redux/reducers";
 import { createDeleteUserInfoAction } from "../../../redux/actions_creators/login_action";
+import "./css/Header.less";
+import { reqWeather } from "../../../api";
+import titles from "../../../config/titleConfig";
+import menuList from "../../../config/menuConfig";
+import { useLocation } from "react-router-dom";
+
 const { confirm } = Modal;
 
-const mapStateToProps = (state: reducersType) => ({ userInfo: state.userInfo });
+const mapStateToProps = (state: reducersType) => ({
+  userInfo: state.userInfo,
+  title: state.title,
+});
 
 const mapDispatchToProps = { deleteUser: createDeleteUserInfoAction };
 
@@ -21,20 +30,59 @@ type HeaderProps = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps;
 
 const Header: FC<HeaderProps> = (props: HeaderProps) => {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD HH:mm:ss"));
   const [isFull, setFull] = useState(false);
+  const [weather, setWeather] = useState("");
+  const [temperature, setTemperature] = useState(0);
+  const [title, setTitle] = useState("");
+  const pathName = useLocation().pathname;
 
   const setFullChange = () => {
     setFull(!isFull);
   };
 
+  const initWeatherAndTemperature = async () => {
+    let result: any = await reqWeather();
+    const { weather, temperature } = result;
+    setWeather(weather);
+    setTemperature(temperature);
+  };
+
+  const GetTitle = (pathName: string) => {
+    let result = "";
+    menuList.forEach((item) => {
+      if (item.children instanceof Array) {
+        let tmp = item.children.find((citem) => {
+          return citem.path === pathName;
+        });
+        if (tmp) {
+          result = tmp.title;
+        }
+      } else {
+        if (pathName === item.path) {
+          result = item.title;
+        }
+      }
+    });
+    setTitle(result);
+  };
+
+  //ComponentDidMount
   useEffect(() => {
     let timer = setInterval(() => {
-      setDate(new Date());
+      setDate(dayjs().format("YYYY-MM-DD HH:mm:ss"));
     }, 1000);
-    screenFull.on("change", setFullChange);
+    initWeatherAndTemperature();
+    GetTitle(pathName);
     return () => {
       clearInterval(timer);
+    };
+  }, []);
+
+  //isFull update
+  useEffect(() => {
+    screenFull.on("change", setFullChange);
+    return () => {
       screenFull.off("change", setFullChange);
     };
   }, [isFull]);
@@ -62,19 +110,28 @@ const Header: FC<HeaderProps> = (props: HeaderProps) => {
           {isFull ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
         </Button>
         <span className="username">欢迎,{props.userInfo.user.username}</span>
-        <Button type="link" size="small" onClick={logOut}>
+        <Button
+          className="logOut-btn"
+          type="link"
+          size="small"
+          onClick={logOut}
+        >
           退出登录
         </Button>
       </div>
       <div className="header-bottom">
-        <div className="header-bottom-left">柱状图</div>
+        <div className="header-bottom-left">
+          {titles.get(props.title) || title}
+        </div>
         <div className="header-bottom-right">
-          {date.toTimeString().substring(0, 8)}
+          <span>{date}</span>
           <img
             src="http://api.map.baidu.com/images/weather/day/qing.png"
             alt="天气信息"
           />
-          晴&nbsp;温度 2 ~ -5
+          <span>
+            {weather}&nbsp;温度&nbsp;{temperature}
+          </span>
         </div>
       </div>
     </header>

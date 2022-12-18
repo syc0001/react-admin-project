@@ -6,7 +6,7 @@ export interface LoginStateType {
   isLogin: boolean;
 }
 
-interface action_types {
+interface login_types {
   type: string;
   data: LoginStateType;
 }
@@ -23,7 +23,7 @@ const LoginState: LoginStateType = {
 
 const loginReducer = (
   preState = LoginState,
-  actions: action_types
+  actions: login_types
 ): LoginStateType => {
   const {type, data} = actions;
   let newState: LoginStateType;
