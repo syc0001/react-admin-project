@@ -4,11 +4,11 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { RuleObject } from "antd/lib/form";
 import { connect } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
-import "./css/Login.less";
 import logo from "../../static/images/logo.png";
 import { reducersType } from "../../redux/reducers";
 import { createSaveUserInfoAction } from "../../redux/actions_creators/login_action";
 import { reqLogin } from "../../api";
+import "./css/Login.less";
 
 const { Item } = Form;
 
@@ -27,7 +27,7 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
     const { status, data, msg } = result;
     if (status === 0) {
       props.saveUserInfo(data);
-      navigate("/admin", { replace: true });
+      navigate("/admin/home", { replace: true });
     } else {
       message.warning(msg, 1);
     }
@@ -91,7 +91,7 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
 
 const Login: FC<LoginProps> = (props: LoginProps) => {
   if (props.isLogin) {
-    return <Navigate to={"/admin/home"} />;
+    return <Navigate to={"/admin"} />;
   }
   return (
     <div className="login">

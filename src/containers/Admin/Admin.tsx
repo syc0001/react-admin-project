@@ -21,10 +21,6 @@ type AdminProps = ReturnType<typeof mapStateToProps> &
 const Admin: FC<AdminProps> = (props: AdminProps) => {
   const { isLogin } = props.userInfo;
 
-  const loginOut = () => {
-    props.deleteUserInfo();
-  };
-
   const test = async () => {
     let result = await reqCategoryList();
     console.log(result);
@@ -41,8 +37,8 @@ const Admin: FC<AdminProps> = (props: AdminProps) => {
       <Layout>
         <Header />
         <Content className="content">
-          <button onClick={test}>click me</button>
-          Content,这是路由
+          {/* <button onClick={test}>click me</button>
+          Content,这是路由 */}
           <Outlet />
         </Content>
         <Footer className="footer">

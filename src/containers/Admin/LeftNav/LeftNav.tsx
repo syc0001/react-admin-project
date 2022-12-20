@@ -76,8 +76,8 @@ const LeftNav: FC<LeftNavProps> = (props: LeftNavProps) => {
         <h1>商品管理系统</h1>
       </header>
       <Menu
-        defaultSelectedKeys={[locationArr[locationArr.length - 1]]}
-        defaultOpenKeys={[locationArr[1]]}
+        selectedKeys={[locationArr[locationArr.length - 1]]}
+        defaultOpenKeys={locationArr}
         mode="inline"
         theme="dark"
         inlineCollapsed={collapsed}

@@ -1,5 +1,5 @@
 import myAxios from "./myAxios";
-import { BASE_URL, A_MAP_KEY, A_MAP_URL, CITY_CODE } from "../config";
+import { BASE_URL, A_MAP_KEY, CITY_CODE } from "../config";
 import jsonp from "jsonp";
 import { message } from "antd";
 
@@ -29,4 +29,12 @@ export const reqWeather = () => {
       }
     );
   });
+};
+
+export const reqAddCategory = (categoryName: string) => {
+  return myAxios.post(`${BASE_URL}/manage/category/add`, { categoryName });
+};
+
+export const reqUpdateCategory = (categoryObj: {}) => {
+  return myAxios.post(`${BASE_URL}/manage/category/update`, categoryObj);
 };
