@@ -91,7 +91,7 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
 
 const Login: FC<LoginProps> = (props: LoginProps) => {
   if (props.isLogin) {
-    return <Navigate to={"/admin"} />;
+    return <Navigate to={"/admin/home"} />;
   }
   return (
     <div className="login">

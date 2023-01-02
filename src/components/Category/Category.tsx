@@ -1,20 +1,31 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useRef } from "react";
 import { Button, Card, message, Modal, Table, Form, Input } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { connect } from "react-redux";
 import { reqAddCategory, reqCategoryList, reqUpdateCategory } from "../../api";
 import { PAGE_SIZE } from "../../config";
 import { RuleObject } from "antd/lib/form";
+import { reducersType } from "../../redux/reducers";
+import { createSaveCategoryListAction } from "../../redux/actions_creators/category_action";
 
 const { Item } = Form;
 
-const Category: FC<any> = () => {
+const mapStateToProps = (state: reducersType) => ({});
+
+const mapDispatchToProps = { saveCategory: createSaveCategoryListAction };
+
+type CategoryProps = ReturnType<typeof mapStateToProps> &
+  typeof mapDispatchToProps;
+
+let initialTitle = "";
+const Category: FC<CategoryProps> = (props: CategoryProps) => {
   const [categoryList, setCategoryList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operType, setOperType] = useState("");
   const [isLoading, setLoading] = useState(true);
-  const [initialTitle, setInitialTitle] = useState("");
   const [modalCurrentValue, setModalCurrentValue] = useState("");
   const form = Form.useForm()[0];
+  const formRef: any = useRef();
   const columns: any = [
     {
       title: "分类名称",
@@ -29,7 +40,12 @@ const Category: FC<any> = () => {
           <Button
             type="link"
             onClick={() => {
-              setInitialTitle(operatorData.name);
+              initialTitle = operatorData.name;
+              console.log(initialTitle);
+              // form.resetFields(initialTitle);
+              // if (formRef.current != undefined) {
+              //   formRef.current.resetFields();
+              // }
               showModal("update", operatorData);
             }}
           >
@@ -45,9 +61,10 @@ const Category: FC<any> = () => {
   const getCategoryList = async () => {
     let result: any = await reqCategoryList();
     setLoading(false);
-    let { status, data, msg } = result;
+    const { status, data, msg } = result;
     if (status === 0) {
       setCategoryList(data);
+      props.saveCategory(data);
     } else {
       message.error(msg, 1);
     }
@@ -57,19 +74,13 @@ const Category: FC<any> = () => {
     getCategoryList();
   }, []);
 
-  // useEffect(() => {
-  //   console.log("useeffect", initialTitle);
-  //   form.resetFields();
-  //   console.log("form next");
-  // }, [initialTitle]);
-
   //Component Callback
   const toAdd = async (values: string) => {
     let result: any = await reqAddCategory(values);
     const { status, data, msg } = result;
     if (status === 0) {
       message.success("新增商品分类成功", 1);
-      let newData = [data as never, ...categoryList];
+      let newData = [data, ...categoryList] as any;
       setCategoryList(newData);
       form.resetFields();
       setIsModalOpen(false);
@@ -167,7 +178,12 @@ const Category: FC<any> = () => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form name="basic" initialValues={{ remember: false }} form={form}>
+        <Form
+          name="basic"
+          ref={formRef}
+          initialValues={{ remember: false }}
+          form={form}
+        >
           <Item
             name="categoryName"
             initialValue={initialTitle}
@@ -181,4 +197,4 @@ const Category: FC<any> = () => {
   );
 };
 
-export default Category;
+export default connect(mapStateToProps, mapDispatchToProps)(Category);

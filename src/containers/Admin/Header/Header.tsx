@@ -50,6 +50,9 @@ const Header: FC<HeaderProps> = (props: HeaderProps) => {
 
   const GetTitle = (pathName: string) => {
     let result = "";
+    if (pathName.includes("product")) {
+      result = "商品管理";
+    }
     menuList.forEach((item) => {
       if (item.children instanceof Array) {
         let tmp = item.children.find((citem) => {

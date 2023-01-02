@@ -61,7 +61,8 @@ type LeftNavProps = ReturnType<typeof mapStateToProps> &
 const LeftNav: FC<LeftNavProps> = (props: LeftNavProps) => {
   const [collapsed] = useState(false);
   const navigate = useNavigate();
-  const locationArr = useLocation().pathname.split("/").slice(1);
+  const locationArr = useLocation().pathname.split("/").slice(1).reverse();
+  // locationArr[0]
 
   const chooseRouteAndSave = (params: SelectInfo) => {
     const pathName = params.keyPath.reverse().join("/");
@@ -76,7 +77,9 @@ const LeftNav: FC<LeftNavProps> = (props: LeftNavProps) => {
         <h1>商品管理系统</h1>
       </header>
       <Menu
-        selectedKeys={[locationArr[locationArr.length - 1]]}
+        selectedKeys={[
+          locationArr.includes("product") ? "product" : locationArr[0],
+        ]}
         defaultOpenKeys={locationArr}
         mode="inline"
         theme="dark"

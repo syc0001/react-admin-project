@@ -1,7 +1,7 @@
 import { SAVE_TITLE } from "../action_types";
+import { action_types } from "./action_types";
 
-export interface menu_types {
-  type: string;
+export interface menu_types extends action_types {
   data: string;
 }
 

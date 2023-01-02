@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-const Home: FC<any> = () => {
+const Home: FC<unknown> = () => {
   return <div>Home</div>;
 };
 

@@ -3,7 +3,6 @@ import { reducersType } from "../../redux/reducers";
 import { Navigate, Outlet } from "react-router-dom";
 import { FC } from "react";
 import { createDeleteUserInfoAction } from "../../redux/actions_creators/login_action";
-import { reqCategoryList } from "../../api";
 import { Layout } from "antd";
 import "./css/Admin.less";
 import Header from "./Header/Header";
@@ -21,11 +20,6 @@ type AdminProps = ReturnType<typeof mapStateToProps> &
 const Admin: FC<AdminProps> = (props: AdminProps) => {
   const { isLogin } = props.userInfo;
 
-  const test = async () => {
-    let result = await reqCategoryList();
-    console.log(result);
-  };
-
   if (!isLogin) {
     return <Navigate to={"/"} />;
   }
@@ -37,8 +31,6 @@ const Admin: FC<AdminProps> = (props: AdminProps) => {
       <Layout>
         <Header />
         <Content className="content">
-          {/* <button onClick={test}>click me</button>
-          Content,这是路由 */}
           <Outlet />
         </Content>
         <Footer className="footer">

@@ -38,3 +38,42 @@ export const reqAddCategory = (categoryName: string) => {
 export const reqUpdateCategory = (categoryObj: {}) => {
   return myAxios.post(`${BASE_URL}/manage/category/update`, categoryObj);
 };
+
+export const reqProductList = (pageNum: number, pageSize: number) => {
+  return myAxios.get(`${BASE_URL}/manage/product/list`, {
+    params: {
+      pageNum,
+      pageSize,
+    },
+  });
+};
+
+export const reqUpdateProductList = (productId: string, status: number) => {
+  return myAxios.post(`${BASE_URL}/manage/product/updateStatus`, {
+    productId,
+    status,
+  });
+};
+
+export const reqSearchProductList = (
+  pageNum: number,
+  pageSize: number,
+  searchType: any,
+  searchKey: any
+) => {
+  return myAxios.get(`${BASE_URL}/manage/product/search`, {
+    params: {
+      pageNum,
+      pageSize,
+      [searchType]: searchKey,
+    },
+  });
+};
+
+export const reqProdById = (productId: string) => {
+  return myAxios.get(`${BASE_URL}/manage/product/info`, {
+    params: {
+      productId,
+    },
+  });
+};
