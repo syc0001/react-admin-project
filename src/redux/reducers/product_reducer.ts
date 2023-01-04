@@ -1,22 +1,19 @@
+import { ProductType } from "../../type";
 import { SAVE_PROD_LIST } from "../action_types";
 import { action_types } from "./action_types";
 
-export type ProductListData = {
-  [key in string]: any;
-};
-
 export interface product_list_types extends action_types {
-  data: ProductListData[];
+  data: ProductType[];
 }
 
-const initState: ProductListData[] = [];
+const initState: ProductType[] = [];
 
 const ProductReducer = (
   preState = initState,
   actions: product_list_types
-): ProductListData[] => {
+): ProductType[] => {
   const { type, data } = actions;
-  let newState: ProductListData[];
+  let newState: ProductType[];
   switch (type) {
     case SAVE_PROD_LIST:
       newState = [...data];

@@ -9,6 +9,7 @@ import { reducersType } from "../../redux/reducers";
 import { createSaveUserInfoAction } from "../../redux/actions_creators/login_action";
 import { reqLogin } from "../../api";
 import "./css/Login.less";
+import { LoginType } from "../../type";
 
 const { Item } = Form;
 
@@ -23,7 +24,10 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
   const navigate = useNavigate();
 
   const onFinish = async (values: { username: string; password: string }) => {
-    let result: any = await reqLogin(values.username, values.password);
+    let result = (await reqLogin(
+      values.username,
+      values.password
+    )) as unknown as LoginType;
     const { status, data, msg } = result;
     if (status === 0) {
       props.saveUserInfo(data);
@@ -33,14 +37,14 @@ const FormLogin: FC<LoginProps> = (props: LoginProps) => {
     }
   };
 
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishFailed = (errorInfo: unknown) => {
     message.error("表单输入错误,请检查");
   };
 
   const pwdValidator = (
     rule: RuleObject,
     value: string
-  ): Promise<void | any> | void => {
+  ): Promise<void | unknown> | void => {
     if (!value) {
       return Promise.reject("密码必须输入");
     } else if (value.length > 12) {

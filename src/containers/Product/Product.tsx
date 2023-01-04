@@ -1,7 +1,8 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, Input, message, Select, Table } from "antd";
 import { PlusCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { ColumnsType } from "antd/lib/table/Table";
 import { connect } from "react-redux";
 import {
   reqProductList,
@@ -11,6 +12,11 @@ import {
 import { PAGE_SIZE } from "../../config";
 import { reducersType } from "../../redux/reducers";
 import { createSaveProductListAction } from "../../redux/actions_creators/product_action";
+import {
+  ProductListType,
+  ProductType,
+  UpdateProductStatusType,
+} from "../../type";
 
 const { Option } = Select;
 
@@ -25,7 +31,7 @@ type ProductProps = ReturnType<typeof mapStateToProps> &
 
 let isSearch = false;
 const Product: FC<ProductProps> = (props: ProductProps) => {
-  const [productList, setProductList] = useState([]);
+  const [productList, setProductList] = useState<ProductType[]>([]);
   const [total, setTotal] = useState(0);
   const [current, setCurrent] = useState(0);
   const [searchKey, setSearchKey] = useState("");
@@ -33,7 +39,7 @@ const Product: FC<ProductProps> = (props: ProductProps) => {
   const pathName = useLocation().pathname.split("/");
   const navigate = useNavigate();
 
-  const columns: any = [
+  const columns: ColumnsType<{}> = [
     {
       title: "商品名称",
       dataIndex: "name",
@@ -60,7 +66,7 @@ const Product: FC<ProductProps> = (props: ProductProps) => {
       key: "status",
       width: "10%",
       align: "center",
-      render: (item: any) => {
+      render: (item: ProductType) => {
         const { status } = item;
         return (
           <div>
@@ -84,7 +90,7 @@ const Product: FC<ProductProps> = (props: ProductProps) => {
       key: "operator",
       width: "10%",
       align: "center",
-      render: (item: any) => {
+      render: (item: ProductType) => {
         return (
           <>
             <Button
@@ -111,7 +117,7 @@ const Product: FC<ProductProps> = (props: ProductProps) => {
   ];
 
   const getProductList = async (page: number = 1) => {
-    let result: any;
+    let result: ProductListType;
     if (isSearch) {
       result = await reqSearchProductList(
         page,
@@ -120,7 +126,10 @@ const Product: FC<ProductProps> = (props: ProductProps) => {
         searchKey
       );
     } else {
-      result = await reqProductList(page, PAGE_SIZE);
+      result = (await reqProductList(
+        page,
+        PAGE_SIZE
+      )) as unknown as ProductListType;
     }
     const { status, data } = result;
     if (status === 0) {
@@ -143,12 +152,16 @@ const Product: FC<ProductProps> = (props: ProductProps) => {
     } else {
       status = 1;
     }
-    let result: any = await reqUpdateProductList(_id, status);
+    let result = (await reqUpdateProductList(
+      _id,
+      status
+    )) as unknown as UpdateProductStatusType;
+    console.log("updateProdStatus", result);
     const { status: newState } = result;
     if (newState === 0) {
       message.success("更新商品状态成功", 1);
-      let newProductList: any = [...productList];
-      newProductList = newProductList.map((item: any) => {
+      let newProductList = [...productList];
+      newProductList = newProductList.map((item) => {
         if (item._id === _id) {
           item.status = status;
         }

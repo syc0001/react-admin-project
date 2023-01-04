@@ -62,7 +62,6 @@ const LeftNav: FC<LeftNavProps> = (props: LeftNavProps) => {
   const [collapsed] = useState(false);
   const navigate = useNavigate();
   const locationArr = useLocation().pathname.split("/").slice(1).reverse();
-  // locationArr[0]
 
   const chooseRouteAndSave = (params: SelectInfo) => {
     const pathName = params.keyPath.reverse().join("/");

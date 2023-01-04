@@ -1,12 +1,20 @@
-import { FC, useEffect, useState, useRef } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button, Card, message, Modal, Table, Form, Input } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import { ColumnsType } from "antd/lib/table/Table";
 import { connect } from "react-redux";
 import { reqAddCategory, reqCategoryList, reqUpdateCategory } from "../../api";
 import { PAGE_SIZE } from "../../config";
 import { RuleObject } from "antd/lib/form";
 import { reducersType } from "../../redux/reducers";
 import { createSaveCategoryListAction } from "../../redux/actions_creators/category_action";
+import {
+  AddCategoryType,
+  NewCategoryObjType,
+  CategoryObjType,
+  CategoryListType,
+  UpdateCategoryStatusType,
+} from "../../type";
 
 const { Item } = Form;
 
@@ -17,16 +25,17 @@ const mapDispatchToProps = { saveCategory: createSaveCategoryListAction };
 type CategoryProps = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps;
 
-let initialTitle = "";
+// let initialTitle = "";
 const Category: FC<CategoryProps> = (props: CategoryProps) => {
-  const [categoryList, setCategoryList] = useState([]);
+  const [categoryList, setCategoryList] = useState<CategoryObjType[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [operType, setOperType] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [modalCurrentValue, setModalCurrentValue] = useState("");
+  const [initialTitle, setInitialTitle] = useState("");
   const form = Form.useForm()[0];
-  const formRef: any = useRef();
-  const columns: any = [
+
+  const columns: ColumnsType<{}> = [
     {
       title: "分类名称",
       dataIndex: "name",
@@ -35,17 +44,13 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
     {
       title: "操作",
       key: "operator",
-      render: (operatorData: any) => {
+      render: (operatorData: CategoryObjType) => {
         return (
           <Button
             type="link"
             onClick={() => {
-              initialTitle = operatorData.name;
-              console.log(initialTitle);
-              // form.resetFields(initialTitle);
-              // if (formRef.current != undefined) {
-              //   formRef.current.resetFields();
-              // }
+              setInitialTitle(operatorData.name);
+              setTimeout(() => {}, 300);
               showModal("update", operatorData);
             }}
           >
@@ -59,7 +64,7 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
   ];
 
   const getCategoryList = async () => {
-    let result: any = await reqCategoryList();
+    let result = (await reqCategoryList()) as unknown as CategoryListType;
     setLoading(false);
     const { status, data, msg } = result;
     if (status === 0) {
@@ -74,13 +79,17 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
     getCategoryList();
   }, []);
 
+  useEffect(() => {
+    form.resetFields();
+  }, [initialTitle]);
+
   //Component Callback
   const toAdd = async (values: string) => {
-    let result: any = await reqAddCategory(values);
+    let result = (await reqAddCategory(values)) as unknown as AddCategoryType;
     const { status, data, msg } = result;
     if (status === 0) {
       message.success("新增商品分类成功", 1);
-      let newData = [data, ...categoryList] as any;
+      let newData = [data, ...categoryList];
       setCategoryList(newData);
       form.resetFields();
       setIsModalOpen(false);
@@ -89,8 +98,10 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
     }
   };
 
-  const toUpdate = async (categoryObj: any) => {
-    let result: any = await reqUpdateCategory(categoryObj);
+  const toUpdate = async (categoryObj: NewCategoryObjType) => {
+    let result = (await reqUpdateCategory(
+      categoryObj
+    )) as unknown as UpdateCategoryStatusType;
     const { status, msg } = result;
     if (status === 0) {
       message.success("更新分类名称成功", 1);
@@ -105,19 +116,17 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
   const handleOk = () => {
     form
       .validateFields()
-      .then((value) => {
+      .then((value: { categoryName: string }) => {
         if (operType === "add") {
-          console.log("add");
           toAdd(value.categoryName);
         } else if (operType === "update") {
-          console.log("update");
           const categoryId = modalCurrentValue;
           const categoryName = value.categoryName;
-          const categoryObj = { categoryId, categoryName };
+          const categoryObj: NewCategoryObjType = { categoryId, categoryName };
           toUpdate(categoryObj);
         }
       })
-      .catch((err) => {
+      .catch((err: string) => {
         message.warning("表单输入有误,请检查", 1);
       });
   };
@@ -127,7 +136,7 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
     setIsModalOpen(false);
   };
 
-  const showModal = (operator: string, data: any = null) => {
+  const showModal = (operator: string, data: CategoryObjType | null = null) => {
     setOperType(operator);
     if (data !== null) {
       setModalCurrentValue(data._id);
@@ -138,7 +147,7 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
   const inputValidator = (
     rule: RuleObject,
     value: string
-  ): Promise<void | any> | void => {
+  ): Promise<void | unknown> | void => {
     value = value.replaceAll(" ", "");
     if (!value) {
       return Promise.reject("请输入商品分类名称");
@@ -178,12 +187,7 @@ const Category: FC<CategoryProps> = (props: CategoryProps) => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
-        <Form
-          name="basic"
-          ref={formRef}
-          initialValues={{ remember: false }}
-          form={form}
-        >
+        <Form name="basic" initialValues={{ remember: false }} form={form}>
           <Item
             name="categoryName"
             initialValue={initialTitle}

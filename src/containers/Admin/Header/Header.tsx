@@ -16,6 +16,7 @@ import { reqWeather } from "../../../api";
 import titles from "../../../config/titleConfig";
 import menuList from "../../../config/menuConfig";
 import { useLocation } from "react-router-dom";
+import { WeatherType } from "../../../type";
 
 const { confirm } = Modal;
 
@@ -42,7 +43,7 @@ const Header: FC<HeaderProps> = (props: HeaderProps) => {
   };
 
   const initWeatherAndTemperature = async () => {
-    let result: any = await reqWeather();
+    let result = (await reqWeather()) as unknown as WeatherType;
     const { weather, temperature } = result;
     setWeather(weather);
     setTemperature(temperature);
@@ -70,7 +71,6 @@ const Header: FC<HeaderProps> = (props: HeaderProps) => {
     setTitle(result);
   };
 
-  //ComponentDidMount
   useEffect(() => {
     let timer = setInterval(() => {
       setDate(dayjs().format("YYYY-MM-DD HH:mm:ss"));

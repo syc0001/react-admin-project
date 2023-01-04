@@ -5,9 +5,9 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 import "./css/Detail.less";
 import { reducersType } from "../../../redux/reducers";
-import { ProductListData } from "../../../redux/reducers/product_reducer";
-import { reqProdById } from "../../../api";
+import { reqCategoryList, reqProdById } from "../../../api";
 import { BASE_URL } from "../../../config";
+import { CategoryListType, ProductByIdType, ProductType } from "../../../type";
 
 const { Item } = List;
 
@@ -22,16 +22,43 @@ type DetailProps = ReturnType<typeof mapStateToProps> &
   typeof mapDispatchToProps;
 
 const Detail: FC<DetailProps> = (props: DetailProps) => {
-  const [productData, setProductData] = useState<ProductListData>({});
+  const [productData, setProductData] = useState<ProductType>({
+    __v: 0,
+    _id: "",
+    categoryId: "",
+    desc: "",
+    detail: "",
+    imgs: [],
+    name: "",
+    price: 0,
+    status: 1,
+  });
   const [productName, setproductName] = useState("");
+  const [isLoading, setLoading] = useState(true);
   const match = useMatch("/admin/prud_about/product/detail/:id");
   const navigate = useNavigate();
 
   const getProductById = async (id: string) => {
-    let result: any = await reqProdById(id);
+    let result = (await reqProdById(id)) as unknown as ProductByIdType;
     const { status, data, msg } = result;
     if (status === 0) {
       setProductData(data);
+    } else {
+      message.error(msg);
+    }
+  };
+
+  const getCategoryList = async () => {
+    let result = (await reqCategoryList()) as unknown as CategoryListType;
+    const { status, data, msg } = result;
+    if (status === 0) {
+      let findObj = data.find((item) => {
+        return item._id === productData.categoryId;
+      });
+      if (findObj) {
+        setproductName(findObj.name);
+        setLoading(false);
+      }
     } else {
       message.error(msg);
     }
@@ -43,7 +70,7 @@ const Detail: FC<DetailProps> = (props: DetailProps) => {
     if (reduxList.length) {
       let result = reduxList.find((item) => {
         return item._id === id;
-      }) as ProductListData;
+      });
       if (result) {
         setProductData(result);
       }
@@ -53,12 +80,19 @@ const Detail: FC<DetailProps> = (props: DetailProps) => {
   }, []);
 
   useEffect(() => {
-    const reduxCategoryList = props.categoryList;
-    if (reduxCategoryList.length) {
-      let result: any = reduxCategoryList.find((item: any) => {
-        return item._id === productData.categoryId;
-      });
-      setproductName(result.name);
+    if (Object.values(productData).length) {
+      const reduxCategoryList = props.categoryList;
+      if (reduxCategoryList.length) {
+        let result = reduxCategoryList.find((item) => {
+          return item._id === productData.categoryId;
+        });
+        if (result) {
+          setproductName(result.name);
+          setLoading(false);
+        }
+      } else {
+        getCategoryList();
+      }
     }
   }, [productData]);
 
@@ -77,6 +111,7 @@ const Detail: FC<DetailProps> = (props: DetailProps) => {
           <span>商品详情</span>
         </div>
       }
+      loading={isLoading}
     >
       <List>
         <Item>
@@ -99,7 +134,7 @@ const Detail: FC<DetailProps> = (props: DetailProps) => {
           <span className="prod">商品图片: </span>
           {productData.imgs == null
             ? ""
-            : (productData.imgs as []).map((item: unknown, index: number) => {
+            : productData.imgs.map((item: unknown, index: number) => {
                 return (
                   <img
                     key={index}
@@ -111,7 +146,9 @@ const Detail: FC<DetailProps> = (props: DetailProps) => {
         </Item>
         <Item>
           <span className="prod-detail">商品详情: </span>
-          <span dangerouslySetInnerHTML={{ __html: productData.detail }}></span>
+          <span
+            dangerouslySetInnerHTML={{ __html: productData.detail }}
+          ></span>
         </Item>
       </List>
     </Card>
